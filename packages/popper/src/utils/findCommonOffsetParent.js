@@ -1,19 +1,26 @@
 import isOffsetContainer from './isOffsetContainer';
 import getRoot from './getRoot';
 import getOffsetParent from './getOffsetParent';
+import getParentNode from './getParentNode';
 
 /**
- * Finds the offset parent common to the two provided nodes
+ * Finds the offset parent common to the two provided nodes/references
  * @method
  * @memberof Popper.Utils
- * @argument {Element} element1
- * @argument {Element} element2
+ * @argument {Element|Object} element1
+ * @argument {Element|Object} element2
  * @returns {Element} common offset parent
  */
 export default function findCommonOffsetParent(element1, element2) {
-  // This check is needed to avoid errors in case one of the elements isn't defined for any reason
-  if (!element1 || !element1.nodeType || !element2 || !element2.nodeType) {
-    return document.documentElement;
+  // This is needed in case one of the elements isn't defined or if one of the "elements" is a reference object.
+  if (!element2 || !element2.nodeType) {
+    if (element1 && element1.nodeType) {
+      element2 = getParentNode(element1);
+    } else {
+      return document.documentElement;
+    }
+  } else if (!element1 || !element1.nodeType) {
+    element1 = getParentNode(element2);
   }
 
   // Here we make sure to give as "start" the element that comes first in the DOM
